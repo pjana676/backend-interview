@@ -1,25 +1,28 @@
 version: '3.8'
+
 services:
-  db:
-    image: postgres:14.1-alpine
-    restart: always
+  # Node.js application service
+  app:
+    build: .
+    ports:
+      - "3000:3000"   # Map the host port 3000 to the container's port 3000
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - NODE_ENV=development  # Set the environment to development (adjust as needed)
+      - DB_HOST=postgres
+    depends_on:
+      - postgres   # Depend on the db service to ensure the database container starts first
+
+  # PostgreSQL database service
+  postgres:
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
       - POSTGRES_DB=orderManagement
     ports:
-      - '5432:5432'
-    volumes: 
-      - ./data:/var/lib/postgresql/data
-  api:
-    image: node:slim
-    build: .
-    depends_on:
-      - db
-    ports: 
-      - "3000:3000"
-    command: "npm run start"
+      - "5432:5432"   # Map the host port 5432 to the container's port 5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data   # Use a named volume to persist data
 
-
-
-      
+volumes:
+  pgdata:   # Named volume for PostgreSQL data persistence
