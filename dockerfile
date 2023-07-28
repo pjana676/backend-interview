@@ -8,4 +8,10 @@ RUN npm install
 
 COPY . .
 
-CMD [ "node", "server.js" ]
+EXPOSE 3000
+
+RUN chmod +x startup.sh
+RUN npm i -g sequelize-cli
+ENTRYPOINT [ "./startup.sh" ]
+
+# CMD [ "node", "server.js" ]
